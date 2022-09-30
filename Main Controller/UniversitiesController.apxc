@@ -1,0 +1,139 @@
+public class UniversitiesController {
+    
+    public static List<UniversitiesWrapper> apidata {get;set;}
+    //public static List<UniversitiesWrapper> allapidata {get;set;}
+    public static String newdata {get;set;}
+    public static String sName {get;set;}
+    public static String sCountry {get;set;}
+    public static List<UniversitiesWrapper> allapidata = new List<UniversitiesWrapper>();
+    public static String link;
+    private static String initLink = 'http://universities.hipolabs.com/search';
+    public static Integer ListSize = 0;
+    public static Integer currentPointer = 0;
+    public static Integer QueryLimit = 20; //Making Smaller for Testing
+    
+    
+    //For Testing
+    public static HttpCalloutMock mock = null;
+    
+    public UniversitiesController(){
+        //Controller
+    }
+    
+    @future(callout=True)
+    public static void doCallAction(){
+        //allapidata = new List<UniversitiesWrapper>();
+        HTTP h = new HTTP();
+        HTTPRequest req = new HTTPRequest();
+        
+        //req.setEndpoint('http://universities.hipolabs.com/search');
+        search();
+        req.setEndpoint(link);
+        req.setMethod('GET');
+        
+        //Doing this for testing
+        if (Test.isRunningTest() && (mock != null)) {
+            HTTPResponse res = mock.respond(req);
+            System.debug('===>'+res.getBody());
+            allapidata = UniversitiesWrapper.parse(res.getBody());
+            pagingHere();
+        } else {
+        	HTTPResponse res = h.send(req);
+        	String responsebody = res.getBody().replace('-','_');
+        	allapidata = UniversitiesWrapper.parse(responsebody);
+        	pagingHere();
+        	//newdata = JSON.serialize(allapidata);   //Facing some issue while sending all data at once
+        }
+    }
+    
+    public static void pagingHere(){
+        apidata = new List<UniversitiesWrapper>(); 
+        System.debug('I am here '+allapidata);
+        ListSize=allapidata.size();
+        Integer j=0;
+        System.debug('=>'+ListSize+'=>'+currentPointer);
+        apidata.clear();
+        System.debug('==>'+apidata.size());
+        for(Integer d=currentPointer; d<ListSize; d++){
+            if(j<QueryLimit){
+                apidata.add(allapidata[d]);
+                apidata[j].customDomains = (string)apidata[j].web_pages[0];
+            }
+            else{
+                break;
+            }
+            j++;
+        }
+        
+        newdata = JSON.serialize(apidata);
+        //System.debug('API DATA =>'+apidata);
+    }
+    
+    public static void Search(){
+        System.debug('=> Country '+sCountry);
+        System.debug('=> Name '+sName);
+        if(sCountry == null){
+            //sCountry='Canada'; //To Limit data
+        }
+        if(sCountry != null){
+            if(String.isBlank(sName)){
+                link=initLink+'?country='+sCountry.replaceAll( '\\s+','%20');
+                System.debug('=>'+link);
+            }
+            else if(!String.isBlank(sName)){
+                link=initLink+'?name='+sName.replaceAll( '\\s+','%20')+'&country='+sCountry.replaceAll( '\\s+','%20');
+                System.debug('=>'+link);
+            }
+        }
+        else if(sCountry == null){
+            if(String.isBlank(sName)){
+                link=initLink;
+                System.debug('=>'+link);
+            }
+            else if(!String.isBlank(sName)){
+                link=initLink+'?name='+sName.replaceAll( '\\s+','%20');
+                System.debug('=>'+link);
+            }
+        }
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static String fetchingforLightning(String aName, String aCountry){
+        //Confirmation for Testing
+        sName=null;
+        sCountry=null;
+        if(aName != null && !String.isBlank(aName) && aName != 'undefined'){
+            sName=aName;
+        }
+        if(aCountry != null && !String.isBlank(aCountry) && aCountry != 'undefined' ){
+            sCountry = aCountry;
+        }
+        
+        System.debug('Recived Name '+sName+' Country: '+sCountry);
+        
+        HTTP h = new HTTP();
+        HTTPRequest req = new HTTPRequest();
+        
+        //req.setEndpoint('http://universities.hipolabs.com/search');
+        
+        search();
+        req.setEndpoint(link);
+        req.setMethod('GET');
+        
+        //Doing this for testing
+        if (Test.isRunningTest() && (mock != null)) {
+             pagingHere();
+             mock.respond(req);
+            return 'Testing';
+            	
+        } else {
+        	HTTPResponse res = h.send(req);
+        	String responsebody = res.getBody().replace('-','_');
+        	allapidata = UniversitiesWrapper.parse(responsebody);
+        	pagingHere();
+        	
+            System.debug('With API data: '+ apidata);
+        	return newdata;
+        }
+    }
+}

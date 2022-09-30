@@ -1,0 +1,32 @@
+/**
+* --------------------------------------------------------------------------------
+* @description      : UniversitesControllerTest.apxc
+* @author           : Digvijaysing Rajput
+* @group            :
+* @last modified on : 09-23-2022
+* @last modified by : ChangeMeIn@UserSettingsUnder.SFDoc
+* @CoverageClass    : UniversitiesController.apxc
+* @CoveragePercent  : 85%
+* --------------------------------------------------------------------------------
+* Modifications Log
+* --------------------------------------------------------------------------------
+* Ver    Date        	   Author             Modification                    Code Review        Code Reviewed By
+* 1.0	23-09-2022		Digvijaysing	Working Completed
+* --------------------------------------------------------------------------------
+**/
+@isTest
+public class UniversitiesControllerTest {
+	
+    @isTest
+    public static void TestingController(){
+        Test.startTest();
+        	UniversitiesController.mock = new ExampleCalloutMock();
+        	UniversitiesController.doCallAction();
+        	
+        	String AuraLWCScenario2 = UniversitiesController.fetchingforLightning(null,null);
+        	String AuraLWCScenario4 = UniversitiesController.fetchingforLightning(null,'India');
+        	String AuraLWCScenario3 = UniversitiesController.fetchingforLightning('pune',null);
+        	String AuraLWCScenario1 = UniversitiesController.fetchingforLightning('pune','India');
+        Test.stopTest();
+    }
+}

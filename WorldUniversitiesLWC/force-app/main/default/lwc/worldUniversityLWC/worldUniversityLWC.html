@@ -1,0 +1,45 @@
+<!-- sldsValidatorIgnore -->
+<!-- sldsValidatorIgnore -->
+
+<!--
+@description       : 
+@author            : ChangeMeIn@UserSettingsUnder.SFDoc
+@group             : 
+@last modified on  : 09-23-2022
+@last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+<div class="slds-box slds-theme_default" style="background-color: #FFF; text-align: center; "  >
+<h2 style="font-size: 20px;" > <b> -# World Universities #- </b> </h2>
+<div class="slds-card__body slds-card__body_inner slds-grid slds-border_top">
+    
+    <div class="slds-col">
+        <lightning-input style="width: 50%;" type="Text" label="University Name :" name="forName" value={searchName}></lightning-input>
+        <div class="slds-var-p-around_medium lgc-bg" style="width: 50%;">
+            <h4 style="font-size: 14px;"> Countries : </h4>
+            <lightning-button-menu alternative-text="Show menu" variant="border-filled" value={searchCountry} onselect={buttonMenu} label={searchCountry}>
+                <lightning-menu-item value='Canada' label="Canada"></lightning-menu-item>
+                <lightning-menu-item value='India' label="India"></lightning-menu-item>
+                <lightning-menu-item value='United States' label="United States"></lightning-menu-item>
+                <lightning-menu-item value='United Kingdom' label="United Kingdom"></lightning-menu-item>
+            </lightning-button-menu>
+        </div>
+    </div>
+    <div class="slds-col slds-align_absolute-center" >
+        <lightning-button variant="brand" label="Search" title="Search" onclick={handleSearch}></lightning-button>
+    </div>
+</div>
+<div style="height: 300px" class="slds-border_top slds-border_bottom">
+    <lightning-datatable
+            key-field="id"
+            data={data}
+            columns={allcolumns}
+            hide-checkbox-column=true>
+    </lightning-datatable>
+</div>
+<div style="margin: 10px">
+    <lightning-button style="margin: 15px" variant="neutral" label="Previous" title="Previous action" onclick={handlePrev} ></lightning-button>
+    <lightning-button style="margin: 15px" variant="neutral" label="Next" title="Next action" onclick={handleNext}></lightning-button>
+</div>
+</div>
+</template>

@@ -1,0 +1,75 @@
+public class UniversitiesWrapper {
+	public List<String> domains {get;set;} 
+    public String customDomains {get;set;} 
+	public String alpha_two_code {get;set;} 
+	public String country {get;set;} 
+	public List<String> web_pages {get;set;} 
+	public String name {get;set;} 
+	public String state_province {get;set;}
+	
+	public UniversitiesWrapper(JSONParser parser) {
+		while (parser.nextToken() != System.JSONToken.END_OBJECT) {
+			if (parser.getCurrentToken() == System.JSONToken.FIELD_NAME) {
+				String text = parser.getText();
+				if (parser.nextToken() != System.JSONToken.VALUE_NULL) {
+					if (text == 'domains') {
+						domains = arrayOfString(parser);
+					} else if (text == 'alpha_two_code') {
+						alpha_two_code = parser.getText();
+					} else if (text == 'country') {
+						country = parser.getText();
+					} else if (text == 'web_pages') {
+						web_pages = arrayOfString(parser);
+					} else if (text == 'customDomains') {
+						customDomains = parser.getText();
+					} else if (text == 'name') {
+						name = parser.getText();
+					} else if (text == 'state_province') {
+						state_province = parser.getText();
+					} else {
+						System.debug(LoggingLevel.WARN, 'UniversitiesWrapper consuming unrecognized property: '+text);
+						consumeObject(parser);
+					}
+				}
+			}
+		}
+	}
+	
+	public static List<UniversitiesWrapper> parse(String json) {
+		System.JSONParser parser = System.JSON.createParser(json);
+		return arrayOfUniversitiesWrapper(parser);
+	}
+	
+	public static void consumeObject(System.JSONParser parser) {
+		Integer depth = 0;
+		do {
+			System.JSONToken curr = parser.getCurrentToken();
+			if (curr == System.JSONToken.START_OBJECT || 
+				curr == System.JSONToken.START_ARRAY) {
+				depth++;
+			} else if (curr == System.JSONToken.END_OBJECT ||
+				curr == System.JSONToken.END_ARRAY) {
+				depth--;
+			}
+		} while (depth > 0 && parser.nextToken() != null);
+	}
+	
+
+    private static List<String> arrayOfString(System.JSONParser p) {
+        List<String> res = new List<String>();
+        if (p.getCurrentToken() == null) p.nextToken();
+        while (p.nextToken() != System.JSONToken.END_ARRAY) {
+            res.add(p.getText());
+        }
+        return res;
+    }
+
+    private static List<UniversitiesWrapper> arrayOfUniversitiesWrapper(System.JSONParser p) {
+        List<UniversitiesWrapper> res = new List<UniversitiesWrapper>();
+        if (p.getCurrentToken() == null) p.nextToken();
+        while (p.nextToken() != System.JSONToken.END_ARRAY) {
+            res.add(new UniversitiesWrapper(p));
+        }
+        return res;
+    }
+}

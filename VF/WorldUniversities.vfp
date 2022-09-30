@@ -1,0 +1,134 @@
+<apex:page controller="UniversitiesController" lightningStyleSheets="true" action="{!doCallAction}">
+    <apex:form >
+        <apex:slds />
+        <div class="slds-scope">
+            <div class="slds-card">
+                    <div class="slds-m-around_x-small slds-align_absolute-center">
+                        <span class="slds-icon_container slds-icon-standard-account" title="description of icon when needed">
+                            <svg aria-hidden="true" class="slds-icon">
+                                <use href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#account')}"></use>
+                            </svg>
+                            <span class="slds-assistive-text">Icon Assistive Text</span>
+                        </span>
+                        <h2 class="slds-card__header-title slds-m-around_x-small">
+                            <a href="#" class="slds-card__header-link slds-truncate" title="Universities">
+                                <span>List of Universities</span>
+                            </a>
+                        </h2>
+                    </div>
+                    <div class="slds-grid slds-border_top">
+                        <div  class="slds-col">
+                            <div class="slds-m-around_medium">
+                                <b>University Name: </b><apex:inputText value="{!sName}" id="theUniName" />
+                            </div>
+                            <div class="slds-m-around_medium">
+                                <b>University Country: </b>
+                                <apex:selectList value="{!sCountry}" multiselect="false" size="1">
+                                    <apex:selectOption itemValue="Canada" itemLabel="Canada"/>
+                                    <apex:selectOption itemValue="India" itemLabel="India"/>
+                                    <apex:selectOption itemValue="United States" itemLabel="United States"/>
+                                    <apex:selectOption itemValue="United Kingdom" itemLabel="United Kingdom"/>
+                                </apex:selectList>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-align_absolute-center">
+                            <apex:commandButton value="Search" action="{!doCallAction}"/>
+                        </div>
+                </div>
+            </div>
+            <apex:pageBlock >
+                <div style="padding: 3px;" >
+                <table style=""> 
+                    <thead>
+                        <th><b>Name</b></th>
+                        <th><b>Websites</b></th>
+                        <th><b>Country</b></th>
+                        <th><b>State</b></th>
+                    </thead>
+                    <tbody id="demo_table_body" style="border: 1px solid;">
+                    </tbody>
+                </table>
+                <div class="slds-m-around_medium" >
+                    <button type="button" onclick="goPrev()">Previous</button>
+                	<button type="button" onclick="goNext()">Next</button>
+                </div>
+                
+               <!--<apex:pageBlockTable value="{!apidata}" var="a" id="pb">
+                    <apex:column headerValue="Name" value="{!a.name}" />
+                    <apex:column headerValue="Websites" >
+                        <apex:outputLink value="{!a.customDomains}" target="_blank">
+    						{!a.customDomains}
+    					</apex:outputLink>
+					</apex:column>
+                    <apex:column headerValue="Country" value="{!a.country}" />
+                    <apex:column headerValue="State" value="{!a.state_province}" />
+                </apex:pageBlockTable>
+                <div class="slds-m-around_medium" >
+                    <apex:commandButton value="Previous" action="{!prev}" reRender="pb"/>
+                	<apex:commandButton value="Next" action="{!next}" reRender="pb"/>
+            	</div>-->
+                </div>
+            </apex:pageBlock>
+        </div>
+    </apex:form>
+    <script> 
+    var data = '{!newdata}';
+    var tabledata = JSON.parse(data);
+    var currentPointer = 0;
+    const tablelimit = 10;
+    var TotalListSize = tabledata.length ;
+    let tableBodyId = document.getElementById("demo_table_body");
+    
+    var tableRows = "";
+    for(let i=0;i<tablelimit;i++){
+        tableRows += `<tr>
+        <td>${tabledata[i].name}</td>
+        <td><a href= ${tabledata[i].web_pages[0]} >${tabledata[i].web_pages[0]}</a></td>
+        <td>${tabledata[i].country}</td>
+        <td>${tabledata[i].state_province}</td>
+        </tr>`;
+		};
+    console.log(tableRows);
+	tableBodyId.innerHTML = tableRows;
+    tableRows = "";
+        
+    function pagingwork(){
+        //$("#tableBodyId > tbody").html("");
+        //alert('Hello'+TotalListSize+currentPointer);
+        //tableBodyId.replaceChild(null,tableBodyId);
+        
+        tableBodyId.innerHTML = "";
+        let newtableRows = "";
+        
+        for(let i=currentPointer; i < (tablelimit+currentPointer) && i<TotalListSize; i++){
+        newtableRows += `<tr>
+        <td>${tabledata[i].name}</td>
+        <td><a href= ${tabledata[i].web_pages[0]} >${tabledata[i].web_pages[0]}</a></td>
+        <td>${tabledata[i].country}</td>
+        <td>${tabledata[i].state_province}</td>
+        </tr>`;
+		};
+        
+        console.log(newtableRows);
+        tableBodyId.innerHTML = newtableRows;
+        newtableRows = "";
+    }
+    
+    function goNext(){
+        if(currentPointer<TotalListSize-tablelimit){
+            //alert('Next');
+        	currentPointer+=tablelimit;
+            pagingwork();
+        }
+    }
+    
+    function goPrev(){
+        
+        if(currentPointer>0){
+            //alert('Prev');
+        	currentPointer-=tablelimit;
+            pagingwork();
+        }
+    }
+    </script>
+</apex:page>

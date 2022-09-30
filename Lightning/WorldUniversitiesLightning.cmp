@@ -1,0 +1,42 @@
+<aura:component controller="UniversitiesController" >
+    
+    <!--<aura:attribute name="data" type="UniversitiesWrapper[]"/> -->
+    <aura:attribute name="completeData" type="List"/>
+    <aura:attribute name="data" type="List"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="Name" type="String"/>
+    <aura:attribute name="Country" type="String"/>
+    <aura:handler name="init" value="{! this }" action="{!c.init }"/>
+    
+    <div>
+    <lightning:card title="Universities List">
+        <div class="slds-card__body slds-card__body_inner slds-grid slds-border_top">
+            <div class="slds-col">
+                <lightning:input style="width: 50%;" type="Text" value="{!v.Name}" label="University Name :"/>
+                <div class="slds-p-around_medium lgc-bg" style="width: 50%;">
+                    <lightning:select value="{!v.Country}" label="Countries :">
+                        <option value="Canada" label="Canada" />
+                        <option value="India" label="India"/>
+                        <option value="United States" label="United States"/>
+                        <option value="United Kingdom" label="United Kingdom" />
+                    </lightning:select>
+                </div>
+            </div>
+            <div class="slds-col slds-align_absolute-center" >
+                <lightning:button variant="destructive" label="Search" title="Search" onclick="{!c.init}"/>
+            </div>
+        </div>
+    </lightning:card>
+    <div style="height: 350px" class="slds-border_top slds-border_bottom">
+        <lightning:datatable
+                             keyField="id"
+                             columns="{!v.columns }"
+                             data="{!v.data }"
+                             hideCheckboxColumn="true"/>
+    </div>
+        <div class="slds-m-around_x-small">
+        	<lightning:button variant="brand" label="Previous" title="Previous action" onclick="{!c.handlePrev}"/>
+            <lightning:button variant="brand" label="Next" title="Next action" onclick="{!c.handleNext}"/>
+        </div>
+    </div>
+</aura:component>
